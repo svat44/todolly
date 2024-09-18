@@ -2,6 +2,7 @@
 const taskInput = document.getElementById('taskInput');
 const addTaskBtn = document.getElementById('addTaskBtn');
 const taskList = document.getElementById('taskList');
+const categoryInput = document.getElementById('categoryInput'); // Declare once
 
 // Initialize score and create a score display
 let score = 0;
@@ -15,71 +16,75 @@ window.addEventListener('DOMContentLoaded', loadTasks);
 // Add event listener for adding a new task
 addTaskBtn.addEventListener('click', addTask);
 
-// Function to load tasks and score from localStorage
+// Modify loadTasks to distribute tasks into the correct columns
 function loadTasks() {
-    // Retrieve tasks and score from localStorage
     const savedTasks = JSON.parse(localStorage.getItem('tasks')) || [];
     score = localStorage.getItem('score') ? parseInt(localStorage.getItem('score')) : 0;
 
-    // Update the score display
     scoreDisplay.innerHTML = `Score: ${score}`;
 
-    // Load and display the tasks
+    // Clear existing lists before loading new ones
+    document.getElementById('personalTasks').innerHTML = '';
+    document.getElementById('workTasks').innerHTML = '';
+    document.getElementById('urgentTasks').innerHTML = '';
+
     savedTasks.forEach(task => {
-        createTaskElement(task.text, task.completed);
+        createTaskElement(task.text, task.category, task.completed);
     });
 }
 
-// Function to create and add a new task element
-function createTaskElement(taskText, completed = false) {
+// Adjust createTaskElement to add tasks to the correct column
+function createTaskElement(taskText, category = 'Personal', completed = false) {
     const li = document.createElement('li');
     li.innerHTML = `${taskText} <button class="deleteBtn">X</button>`;
+    if (completed) li.classList.add('completed');
 
-    // Mark task as completed
-    if (completed) {
-        li.classList.add('completed');
-    }
+    // Add task to the appropriate list based on category
+    const list = category === 'Urgent' ? document.getElementById('urgentTasks') :
+                 category === 'Work' ? document.getElementById('workTasks') :
+                 document.getElementById('personalTasks');
 
-    // Add event listener to mark task as complete and update score
-    li.addEventListener('click', function () {
-        if (!li.classList.contains('completed')) {
-            li.classList.toggle('completed');
-            score += 10;  // Earn 10 points for completing a task
-            scoreDisplay.innerHTML = `Score: ${score}`;
-        }
-        saveTasks(); // Save task and score
+    list.appendChild(li);
+
+    li.addEventListener('click', () => {
+        li.classList.toggle('completed');
+        saveTasks();
     });
 
-    // Add event listener for deleting the task
-    li.querySelector('.deleteBtn').addEventListener('click', function () {
+    li.querySelector('.deleteBtn').addEventListener('click', function (event) {
+        event.stopPropagation();
         li.remove();
-        saveTasks(); // Save tasks after deleting
+        saveTasks();
     });
-
-    taskList.appendChild(li);
 }
 
 // Function to add a new task
 function addTask() {
     const taskText = taskInput.value;
+    const category = categoryInput.value;
 
     if (taskText !== '') {
-        createTaskElement(taskText);  // Create the new task
+        createTaskElement(taskText, category);  // Create the new task
         saveTasks();  // Save the new task list
         taskInput.value = '';  // Clear the input field
     }
 }
 
-// Function to save tasks and score to localStorage
 function saveTasks() {
     const tasks = [];
-    taskList.querySelectorAll('li').forEach(li => {
-        tasks.push({
-            text: li.firstChild.textContent.trim(),
-            completed: li.classList.contains('completed')
+    const allColumns = [document.getElementById('personalTasks'), document.getElementById('workTasks'), document.getElementById('urgentTasks')];
+    
+    allColumns.forEach(column => {
+        column.querySelectorAll('li').forEach(li => {
+            const taskText = li.firstChild.textContent.trim();
+            const category = column.id.replace('Tasks', '');
+            tasks.push({ text: taskText, category: category, completed: li.classList.contains('completed') });
         });
     });
-    // Save tasks and score to localStorage
+
     localStorage.setItem('tasks', JSON.stringify(tasks));
     localStorage.setItem('score', score);
 }
+
+
+
