@@ -36,16 +36,18 @@ function loadTasks() {
 
 
 // Adjust createTaskElement to add tasks to the correct column
-function createTaskElement(taskText, category = 'Personal', completed = false) {
+function createTaskElement(taskText, category = 'personal', completed = false) {
     const li = document.createElement('li');
     li.innerHTML = `${taskText} <button class="deleteBtn">X</button>`;
     if (completed) li.classList.add('completed');
 
-    // Ensure tasks go to the correct category list
+    // Convert category to lowercase for case-insensitive matching
     let list;
-    if (category === 'Urgent') {
+    const lowerCaseCategory = category.toLowerCase();
+
+    if (lowerCaseCategory === 'urgent') {
         list = document.getElementById('urgentTasks');
-    } else if (category === 'Work') {
+    } else if (lowerCaseCategory === 'work') {
         list = document.getElementById('workTasks');
     } else {
         list = document.getElementById('personalTasks');
@@ -64,6 +66,7 @@ function createTaskElement(taskText, category = 'Personal', completed = false) {
         saveTasks();
     });
 }
+
 
 
 // Function to add a new task
