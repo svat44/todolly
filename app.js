@@ -41,10 +41,15 @@ function createTaskElement(taskText, category = 'Personal', completed = false) {
     li.innerHTML = `${taskText} <button class="deleteBtn">X</button>`;
     if (completed) li.classList.add('completed');
 
-    // Add task to the appropriate list based on category
-    const list = category === 'Urgent' ? document.getElementById('urgentTasks') :
-                 category === 'Work' ? document.getElementById('workTasks') :
-                 document.getElementById('personalTasks');
+    // Ensure tasks go to the correct category list
+    let list;
+    if (category === 'Urgent') {
+        list = document.getElementById('urgentTasks');
+    } else if (category === 'Work') {
+        list = document.getElementById('workTasks');
+    } else {
+        list = document.getElementById('personalTasks');
+    }
 
     list.appendChild(li);
 
@@ -59,6 +64,7 @@ function createTaskElement(taskText, category = 'Personal', completed = false) {
         saveTasks();
     });
 }
+
 
 // Function to add a new task
 function addTask() {
