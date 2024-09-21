@@ -28,10 +28,12 @@ function loadTasks() {
     document.getElementById('workTasks').innerHTML = '';
     document.getElementById('urgentTasks').innerHTML = '';
 
+    // Iterate through saved tasks and recreate them in the correct category
     savedTasks.forEach(task => {
         createTaskElement(task.text, task.category, task.completed);
     });
 }
+
 
 // Adjust createTaskElement to add tasks to the correct column
 function createTaskElement(taskText, category = 'Personal', completed = false) {
@@ -77,7 +79,7 @@ function saveTasks() {
     allColumns.forEach(column => {
         column.querySelectorAll('li').forEach(li => {
             const taskText = li.firstChild.textContent.trim();
-            const category = column.id.replace('Tasks', '');
+            const category = column.id.replace('Tasks', ''); // Extracts 'personal', 'work', 'urgent' from the id
             tasks.push({ text: taskText, category: category, completed: li.classList.contains('completed') });
         });
     });
@@ -85,6 +87,7 @@ function saveTasks() {
     localStorage.setItem('tasks', JSON.stringify(tasks));
     localStorage.setItem('score', score);
 }
+
 
 
 
