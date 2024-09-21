@@ -38,7 +38,7 @@ function loadTasks() {
 // Adjust createTaskElement to add tasks to the correct column
 function createTaskElement(taskText, category = 'personal', completed = false) {
     const li = document.createElement('li');
-    li.innerHTML = `${taskText} <button class="deleteBtn">X</button>`;
+    li.innerHTML = `${taskText} <button class="deleteBtn">-</button>`;
     if (completed) li.classList.add('completed');
 
     // Convert category to lowercase for case-insensitive matching
